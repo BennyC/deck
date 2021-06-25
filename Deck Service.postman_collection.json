@@ -1,0 +1,196 @@
+{
+	"info": {
+		"_postman_id": "e9dc2a14-819d-4123-b819-612ae2466a93",
+		"name": "Deck Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Full Deck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"deck_id\", jsonData.deck_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"shuffle\": false,\n    \"cards\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/decks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"decks"
+					]
+				},
+				"description": "Create a standard deck, made up of 52 cards. All thirteen cards for each of the four suits."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Shuffled Deck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"deck_id\", jsonData.deck_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"shuffle\": true,\n    \"cards\": \"\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/decks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"decks"
+					]
+				},
+				"description": "Create a standard deck, made up of 52 cards. All thirteen cards for each of the four suits."
+			},
+			"response": []
+		},
+		{
+			"name": "Create Small Deck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"deck_id\", jsonData.deck_id);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"shuffle\": true,\n    \"cards\": \"AD,AS,AC,AH\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/decks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"decks"
+					]
+				},
+				"description": "Create a standard deck, made up of 52 cards. All thirteen cards for each of the four suits."
+			},
+			"response": []
+		},
+		{
+			"name": "Open Created Deck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/decks/{{deck_id}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"decks",
+						"{{deck_id}}"
+					]
+				},
+				"description": "View a Deck that has previously been opened."
+			},
+			"response": []
+		},
+		{
+			"name": "Draw from Created Deck",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"count\": 3\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/decks/{{deck_id}}/draw-cards",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"decks",
+						"{{deck_id}}",
+						"draw-cards"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "deck_id",
+			"value": ""
+		}
+	]
+}
