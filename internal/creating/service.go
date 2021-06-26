@@ -1,9 +1,13 @@
 package creating
 
 import (
+	"errors"
+
 	"github.com/bennyc/deck/internal/entity"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
+
+var ErrOptionValidation = errors.New("invalid option parameters provided")
 
 // Create a new Creating Service
 func New(decks entity.DeckRepository) Service {
@@ -28,7 +32,7 @@ func (s *service) New(o Options) (*entity.Deck, error) {
 	// Validate the Options object to ensure all Selection Codes exist
 	// within a Standard Deck
 	if err := o.Validate(); err != nil {
-		return nil, err
+		return nil, ErrOptionValidation
 	}
 
 	deck := entity.NewStandardDeck()

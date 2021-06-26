@@ -2,12 +2,14 @@ package rest
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/bennyc/deck/internal/creating"
 	"github.com/bennyc/deck/internal/drawing"
 	"github.com/bennyc/deck/internal/entity"
+	derr "github.com/bennyc/deck/internal/err"
 	"github.com/gorilla/mux"
 )
 
@@ -30,7 +32,7 @@ func createDeck(service creating.Service) http.HandlerFunc {
 		var cr createReq
 
 		if err := json.NewDecoder(r.Body).Decode(&cr); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			renderError(w, derr.New(http.StatusBadRequest, err))
 			return
 		}
 
@@ -46,15 +48,17 @@ func createDeck(service creating.Service) http.HandlerFunc {
 			Selection: sel,
 		})
 
-		// @TODO
-		// Determine the type of error
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			if errors.Is(err, creating.ErrOptionValidation) {
+				err = derr.New(http.StatusUnprocessableEntity, err)
+			}
+
+			renderError(w, err)
 			return
 		}
 
 		w.Header().Set("Location", r.URL.Path+"/"+deck.Id)
-		renderJSON(w, &createRes{
+		renderJSON(w, createRes{
 			Id:        deck.Id,
 			Shuffled:  deck.Shuffled,
 			Remaining: len(deck.Cards),
@@ -69,7 +73,7 @@ func openDeck(repository entity.DeckRepository) http.HandlerFunc {
 		deck, err := repository.GetById(vars["id"])
 
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			renderError(w, derr.New(http.StatusNotFound, err))
 			return
 		}
 
@@ -87,19 +91,19 @@ func drawCards(service drawing.Service, repository entity.DeckRepository) http.H
 		deck, err := repository.GetById(vars["id"])
 
 		if err != nil {
-			w.WriteHeader(http.StatusNotFound)
+			renderError(w, derr.New(http.StatusNotFound, err))
 			return
 		}
 
 		var req request
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			renderError(w, derr.New(http.StatusBadRequest, err))
 			return
 		}
 
 		drawn, err := service.Draw(deck, req.Count)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			renderError(w, derr.New(http.StatusUnprocessableEntity, err))
 			return
 		}
 

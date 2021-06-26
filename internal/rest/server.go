@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/bennyc/deck/internal/creating"
 	"github.com/bennyc/deck/internal/drawing"
 	"github.com/bennyc/deck/internal/entity"
+	"github.com/bennyc/deck/internal/err"
 	"github.com/gorilla/mux"
 )
 
@@ -63,4 +65,16 @@ func renderJSON(w http.ResponseWriter, r interface{}, s int) {
 
 	w.WriteHeader(s)
 	w.Write(str)
+}
+
+func renderError(w http.ResponseWriter, e error) {
+	if statusErr := err.ErrStatusCode(nil); errors.As(e, &statusErr) {
+		log.Println(statusErr)
+
+		code := statusErr.Code()
+		w.WriteHeader(code)
+		return
+	}
+
+	w.WriteHeader(http.StatusInternalServerError)
 }
